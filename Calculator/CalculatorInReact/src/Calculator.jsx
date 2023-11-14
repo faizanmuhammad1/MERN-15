@@ -46,7 +46,20 @@ export default function Calculator() {
     }
 
     const handlePer = () => {
-        setResult(((Number(num1) / Number(num2))*(100)).toFixed(1) + "%" );
+        try {
+            if(isNaN(Number(num1) / Number(num2)) || !isFinite(Number(num1) / Number(num2))){
+                throw new Error("Invalid Percentage");
+            }
+           
+            setResult(((Number(num1) / Number(num2)*100)).toFixed(1)+"%");
+          } catch (error) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'You cannot take percentage of 1 by 0',
+                icon: 'error',
+                confirmButtonText: 'Conitnue'
+              })
+          }
     }
 
 
