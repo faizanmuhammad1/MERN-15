@@ -4,7 +4,7 @@ export function Navbar() {
   return (
     <div>
       <nav className="bg-gray-800 p-6">
-        <div className="container mx-autogut ">
+        <div className="container mx-auto">
           <div className="flex items-center justify-between">
             <div className="text-white font-bold text-lg">
               <a href="/">
