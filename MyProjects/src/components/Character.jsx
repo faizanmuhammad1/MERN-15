@@ -13,12 +13,12 @@ export default function Character() {
       </div>
       <div>
         <img
-          className="absolute h-20 w-20 top-[29%] right-[50%] eye"
+          className="absolute h-20 w-20 top-[40%] left-[52%] eye"
           src={myImage}
           alt="image"
         />
         <img
-          className="absolute h-20 w-20 top-[32%] right-[44%] eye"
+          className="absolute h-20 w-20 top-[37%] right-[50%] eye"
           src={myImage}
           alt="image"
         />
