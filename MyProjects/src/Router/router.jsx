@@ -16,14 +16,16 @@ function AppRoutes() {
   };
 
   return (
-    <Router>
-      <div onMouseMove={mouseMove}>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<PortfolioPage />} />
-        </Routes>
-      </div>
-    </Router>
+    <>
+      <Router>
+        <div onMouseMove={mouseMove}>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<PortfolioPage />} />
+          </Routes>
+        </div>
+      </Router>
+    </>
   );
 }
 
