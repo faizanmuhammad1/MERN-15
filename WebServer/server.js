@@ -1,32 +1,50 @@
+const express = require("express");
+const app = express();
+const router = express.Router();
+app.use(express.json());
+
 const mongoose = require("mongoose");
-mongoose
-  .connect("mongodb://localhost:27017/MyDB")
-  .then(() => {
-    console.log("Connected to DB");
-  })
-  .catch((err) => {
-    console.log("Error: ", err);
-  });
+async function connectDatabase() {
+  await mongoose.connect(
+    "mongodb+srv://root:jazzy4123@cluster0.v9abmtm.mongodb.net/?retryWrites=true&w=majority"
+  );
+}
 
-const userSchema = new mongoose.Schema({
+connectDatabase()
+  .then((result) => console.log(result))
+  .catch((err) => console.log(err));
+
+const TaskData = new mongoose.Schema({
   name: String,
-  age: Number,
-  Date: {
-    type: Date,
-    default: Date.now,
-  },
+  status: String,
 });
 
-const User = mongoose.model("User", userSchema);
+const Task = mongoose.model("Task", TaskData);
 
-const myUser = new User({
-  name: "John",
-  age: 32,
-});
-const myUser2 = new User({
-  name: "Faizan",
-  age: 82,
+router.post("/Task", async (req, res) => {
+  const { name, status } = req.body;
+  const taskCreated = new Task({
+    name: name,
+    status: status,
+  });
+  await taskCreated.save();
+  res.json({
+    success: true,
+    taskCreated,
+  });
 });
 
-myUser.save();
-myUser2.save();
+
+
+
+
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
+app.use(router);
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Application Server is started on port ${PORT}`);
+});
