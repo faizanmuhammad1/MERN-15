@@ -5,22 +5,6 @@ import { SocialIcon } from "react-social-icons";
 
 const About = () => {
   const [isHovered, setIsHovered] = React.useState(false);
-<<<<<<< HEAD
-=======
-  const [isHovered2, setIsHovered2] = React.useState(false);
-  const handleMouseOver = () => {
-    setIsHovered(true);
-  };
-  const handleMouseOver2 = () => {
-    setIsHovered2(true);
-  };
-  const handleMouseOut = () => {
-    setIsHovered(false);
-  };
-  const handleMouseOut2 = () => {
-    setIsHovered2(false);
-  };
->>>>>>> adb52c0b3c0330c8bdc75751148e700f04e0bb3d
   return (
     <section className="w-full">
       <div className="flex justify-center">
