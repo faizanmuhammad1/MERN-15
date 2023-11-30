@@ -29,6 +29,7 @@ const PersonSchema = new mongoose.Schema({
     min: [3, "Person is not allowed under the age of three"],
   },
   city: String,
+  role: { type: String, enum: ["ADMIN", "USER"], default: "USER" },
 });
 
 const MovieSchema = new mongoose.Schema({
