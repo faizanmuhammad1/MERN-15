@@ -23,7 +23,11 @@ const PersonSchema = new mongoose.Schema({
     minLength: [3, "Name is not allowed"],
     maxLength: [20, "Name is tooooooooo lengthy"],
   },
-  password: { type: String, select: false }, // password won't be fetched
+  password: {
+    type: String,
+    select: false,
+    minLength: [5, "Password can not be less than 5"],
+  }, // password won't be fetched
   age: {
     type: Number,
     min: [3, "Person is not allowed under the age of three"],
@@ -34,6 +38,15 @@ const PersonSchema = new mongoose.Schema({
     default: 0,
   },
   role: { type: String, enum: ["ADMIN", "USER"], default: "USER" },
+});
+PersonSchema.pre("save", () => {
+  console.log(this);
+
+  console.log(" before :: do some operations");
+});
+PersonSchema.post("save", () => {
+  console.log(this);
+  console.log("after::: do some operations");
 });
 
 const MovieSchema = new mongoose.Schema({
@@ -89,7 +102,10 @@ router.get("/", (req, res) => {
 });
 
 router.get("/person", async (req, res) => {
+  // login
+  // const person = await PersonModel.find().select("+password");
   const person = await PersonModel.find();
+
   res.json(person);
 });
 
@@ -143,23 +159,32 @@ router.delete("/movie/many", async (req, res) => {
 });
 
 router.post("/person", async (req, res) => {
-  const { name, age, city, role, balance } = req.body;
-  if (!name || !age || !city || !role) {
+  const { name, age, city, role, balance, password } = req.body;
+  if (!name || !age || !city || !role || !password) {
     res.status(401).json({
       success: false,
       message: "Please enter complete data",
     });
     return;
   } else {
-    const personCreated = new PersonModel({
-      name: name,
-      age: age,
-      city: city,
-      balance: balance,
-      role: role,
-    });
-    personCreated.save();
-    res.json(personCreated);
+    try {
+      const personCreated = new PersonModel({
+        name: name,
+        age: age,
+        city: city,
+        balance: balance,
+        role: role,
+        password: password,
+      });
+      personCreated.save();
+      res.json(personCreated);
+    } catch (err) {
+      res.status(201).json({
+        success: false,
+        message: "Error in Validation",
+        error: err,
+      });
+    }
   }
 });
 
