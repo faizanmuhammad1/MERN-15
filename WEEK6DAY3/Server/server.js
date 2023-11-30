@@ -29,6 +29,10 @@ const PersonSchema = new mongoose.Schema({
     min: [3, "Person is not allowed under the age of three"],
   },
   city: String,
+  balance: {
+    type: Number,
+    default: 0,
+  },
   role: { type: String, enum: ["ADMIN", "USER"], default: "USER" },
 });
 
@@ -52,6 +56,31 @@ const MovieSchema = new mongoose.Schema({
 
 const PersonModel = mongoose.model("Person", PersonSchema);
 const MovieModel = mongoose.model("Movie", MovieSchema);
+const verifyPerson = async (req, res, next) => {
+  const { userId } = req.body;
+  try {
+    const personFound = await PersonModel.findById(userId);
+    if (personFound) {
+      if (personFound.role === "ADMIN") {
+        req.person = personFound;
+        return next();
+      } else {
+        res.status(401).json({
+          success: false,
+          message: "Unauthorized Access",
+        });
+      }
+    } else {
+      res.status(404).json({
+        message: "Person Not Found",
+      });
+    }
+  } catch (error) {
+    res.status(404).json({
+      message: "Person Not Found",
+    });
+  }
+};
 
 router.get("/", (req, res) => {
   res.json({
@@ -73,35 +102,13 @@ router.post("/person/many", async (req, res) => {
   const peopleCreated = await PersonModel.insertMany(people);
   res.json(peopleCreated);
 });
-router.post("/movie/many", async (req, res) => {
+router.post("/movie/many", verifyPerson, async (req, res) => {
   const { movies } = req.body;
   const moviesCreated = await MovieModel.insertMany(movies);
   res.json(moviesCreated);
 });
-const verifyPerson = async (req, res, next) => {
-  // res.json({
-  //   message: " I am first",
-  // });
-  // next();
 
-  const { userId } = req.body;
-  try {
-    const personFound = await PersonModel.findById(userId);
-    if (personFound) {
-      req.person = personFound;
-      return next();
-    } else {
-      res.status(404).json({
-        message: "Person Not Found",
-      });
-    }
-  } catch (error) {
-    res.status(404).json({
-      message: "Person Not Found",
-    });
-  }
-};
-router.post("/movie/recommend", verifyPerson, async (req, res) => {
+router.post("/movie/recommend", async (req, res) => {
   // res.json({
   //   message: " I am second",
   //   person: req.person,
@@ -129,9 +136,15 @@ router.delete("/person/many", async (req, res) => {
   const deleted = await PersonModel.deleteMany({});
   res.json(deleted);
 });
+
+router.delete("/movie/many", async (req, res) => {
+  const deleted = await MovieModel.deleteMany({});
+  res.json(deleted);
+});
+
 router.post("/person", async (req, res) => {
-  const { name, age, city } = req.body;
-  if (!name || !age || !city) {
+  const { name, age, city, role, balance } = req.body;
+  if (!name || !age || !city || !role) {
     res.status(401).json({
       success: false,
       message: "Please enter complete data",
@@ -142,16 +155,17 @@ router.post("/person", async (req, res) => {
       name: name,
       age: age,
       city: city,
+      balance: balance,
+      role: role,
     });
     personCreated.save();
     res.json(personCreated);
   }
 });
 
-router.post("/movie", async (req, res) => {
-  const { id, minAge, maxAge, category } = req.body;
+router.post("/movie", verifyPerson, async (req, res) => {
+  const { minAge, maxAge, category } = req.body;
   const movieCreated = new MovieModel({
-    id: id,
     minAge: minAge,
     maxAge: maxAge,
     category: category,
