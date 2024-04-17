@@ -1,2 +1,1 @@
-schema -> model -> services -> controller -> router -> apps -> sssetuptesth
-
+schema -> model -> services -> controller -> router -> apps
